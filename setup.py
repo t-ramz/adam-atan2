@@ -10,7 +10,8 @@ NVIDIA_SUPPORTED_ARCHS = {"80", "86", "89", "90"}
 
 # Compiler flags.
 CXX_FLAGS = ["-O2", "-std=c++17"]
-NVCC_FLAGS = ["-O2", "-std=c++17", "--expt-extended-lambda"]
+# NOTE: Changed for Frontier
+NVCC_FLAGS = ["-O2", "-std=c++17", "--offload-arch=gfx90a"]
 
 
 # Initialize ext_modules to an empty list
@@ -22,10 +23,11 @@ try:
     import torch
     from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 
-    nvcc_flags_with_arch = NVCC_FLAGS + [
-        f"--generate-code=arch=compute_{arch},code=sm_{arch}"
-        for arch in NVIDIA_SUPPORTED_ARCHS
-    ]
+    # NOTE: changed for Frontier
+    # nvcc_flags_with_arch = NVCC_FLAGS + [
+    #     f"--generate-code=arch=compute_{arch},code=sm_{arch}"
+    #     for arch in NVIDIA_SUPPORTED_ARCHS
+    # ]
     
     ext_modules = [
         CUDAExtension(
@@ -36,7 +38,7 @@ try:
             ],
             extra_compile_args={
                 "cxx": CXX_FLAGS,
-                "nvcc": nvcc_flags_with_arch,
+                "nvcc": NVCC_FLAGS, # NOTE: changed for Frontier
             }
         )
     ]
